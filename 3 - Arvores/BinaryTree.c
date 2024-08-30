@@ -2,16 +2,19 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+// Criação da estrutura de nó
 struct No {
   int dado;
   struct No *direita;
   struct No *esquerda;
 };
 
+// Prototipação das funções
 void insere(int valor, struct No *raiz);
 void exclui(int valor, struct No *raiz);
 struct No *buscaBinaria(struct No *raiz, int valor);
 
+// Função main apenas servindo para mostrar a funcionalida das funções de inserção, exclusão e busca binária. Nota-se que as funções de inserção e exclusão usam a função da busca binária para achar o nó alvo.
 int main(void) {
   int valor;
   struct No *raiz;
@@ -23,6 +26,7 @@ int main(void) {
   return 0;
 }
 
+// Função de inserção de nó na árvore
 void insere(int valor, struct No *raiz) {
   if (raiz == NULL) {
     struct No *no = (struct No *)malloc(sizeof(struct No));
@@ -33,6 +37,7 @@ void insere(int valor, struct No *raiz) {
     printf("Valor já existente na árvore");
 }
 
+// Função de exclusão de nó na árvore
 void exclui(int valor, struct No *raiz) {
   if (raiz == NULL) {
     printf("Valor não existente na árvore");
