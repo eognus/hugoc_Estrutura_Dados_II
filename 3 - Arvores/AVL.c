@@ -115,6 +115,26 @@ void insercao(struct No* base, int valor){
     temp->dado = valor;
     printf("\nValor inserido com sucesso. %i", temp->dado);
 }
+/*
+  void insercao(struct No* base,struct No* raiz, int valor){
+    if(raiz == NULL){
+        raiz = (struct No*) malloc(sizeof(struct No));
+        raiz->dado = valor;
+        buscarots(base);
+    }
+    else{
+        if(raiz->dado > valor){
+            insercao(base, raiz->esquerda, valor);
+        }
+        else if(raiz->dado == valor){
+            printf("Valor já existente");
+        }
+        else{
+            insercao(base, raiz->direita, valor);
+        }
+    }
+}
+*/
 int buscarots(struct No* raiz){
     if(raiz == NULL){
         printf("%i",raiz->dado);
