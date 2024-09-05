@@ -8,7 +8,9 @@ struct No {
 };
 
 void buscarots(No* raiz);
-void atualizafb(No* raiz);
+// direcao = 1 -> rotacao pra esquerda, direcao = 2 -> rotacao pra direita
+void rotsimples(int direcao, No* raiz);
+void rotdupla(int direcao, No* raiz);
 
 int main()
 {
@@ -31,4 +33,20 @@ int buscarots(No* raiz){
     raiz->altura = max(alturaesq, alturadir) + 1;
     
     return altura;
+}
+void rotdupla(int direcao, No* raiz){
+    if(direcao == 1){
+        rotsimples(2, raiz->direita);
+        rotsimples(1,raiz);
+    }
+    else if(direcao == 2){
+        rotsimples(1, raiz->esquerda);
+        rotsimples(2,raiz);
+    }
+    else{
+        printf("Argumentos inválidos");
+    }
+}
+void rotsimples(int direcao, No* raiz){
+    
 }
