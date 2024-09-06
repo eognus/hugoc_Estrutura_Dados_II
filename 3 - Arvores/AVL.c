@@ -11,6 +11,7 @@ struct No{
 };
 
 int buscarots(struct No* raiz);
+void reiniciabusca(struct No* raiz);
 // direcao = 1 -> rotacao pra esquerda, direcao = 2 -> rotacao pra direita
 void rotsimples(int direcao,struct No* raiz);
 void rotdupla(int direcao,struct No* raiz);
@@ -144,7 +145,11 @@ struct No* insercao(struct No* raiz, int valor){
     }
     return raiz;
 }
-
+void reiniciabusca(struct No* raiz){
+    while(buscarots(raiz) != -1){
+        buscarots(raiz);
+    }
+}
 int buscarots(struct No* raiz){
     if(raiz == NULL){
         return 0;
@@ -155,12 +160,30 @@ int buscarots(struct No* raiz){
     
     alturadir = buscarots(raiz->direita);
     alturaesq = buscarots(raiz->esquerda);
+    if(alturadir == -1 || alturaesq == -1){
+        return -1;
+    }
     raiz->fb = alturaesq - alturadir;
     raiz->altura = fmax(alturaesq, alturadir) + 1;
     if(fb >= 2){
+        // rotação pra direita
         if(raiz->esquerda->fb > 0){
-            rotdupla
+            rotsimples(2,raiz)
         }
+        else{
+            rotdupla(2,raiz)
+        }
+        return -1;
+    }
+    else if (fb <= -2){
+        // rotação pra esquerda
+        if(raiz->direita->fb < 0){
+            rotsimples(1,raiz)
+        }
+        else{
+            rotdupla(1,raiz)
+        }
+        return -1;
     }
     return raiz->altura;
 }
