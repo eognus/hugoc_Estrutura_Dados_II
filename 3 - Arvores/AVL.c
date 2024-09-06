@@ -7,6 +7,16 @@ Code, Compile, Run and Debug online from anywhere in world.
 
 *******************************************************************************/
 #include <stdio.h>
+
+/******************************************************************************
+
+Welcome to GDB Online.
+GDB online is an online compiler and debugger tool for C, C++, Python, Java, PHP, Ruby, Perl,
+C#, OCaml, VB, Swift, Pascal, Fortran, Haskell, Objective-C, Assembly, HTML, CSS, JS, SQLite, Prolog.
+Code, Compile, Run and Debug online from anywhere in world.
+
+*******************************************************************************/
+#include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
 
@@ -173,11 +183,10 @@ int buscarots(struct No* raiz){
     alturaesq = buscarots(raiz->esquerda);
     raiz->fb = alturaesq - alturadir;
     raiz->altura = fmax(alturaesq, alturadir) + 1;
-    printf("  altura: %i, fb: %i, alturaesq = %i, alturadir = %i  \n",raiz->altura, raiz->fb,alturaesq, alturadir);
+    printf("  altura: %i, fb: %i, alturaesq = %i, alturadir = %i, fbesq: %i  \n",raiz->altura, raiz->fb,alturaesq, alturadir, raiz->esquerda->fb);
     if(raiz->fb >= 2 || raiz->fb <=-2){
-        printf("rodando");
-        if(raiz->fb >= 2){
-            // rotação pra direita
+        if(raiz->fb >= 2){ // rotação pra direita
+            
             if(raiz->esquerda->fb > 0){
                 rotsimples(2,raiz);
             }
@@ -185,8 +194,8 @@ int buscarots(struct No* raiz){
                 rotdupla(2,raiz);
             }
         }
-        else{
-            // rotação pra esquerda
+        else{// rotação pra esquerda
+            
             if(raiz->direita->fb < 0){
                 rotsimples(1,raiz);
             }
@@ -201,6 +210,36 @@ int buscarots(struct No* raiz){
     }
     return raiz->altura;
 }
+void rotsimples(int direcao,struct  No* raiz){
+    struct No* temp = (struct No*) malloc(sizeof(struct No));
+    temp = raiz; // temp e raiz = 3
+    if(direcao == 1){
+        // PRA ESQUERDA
+        raiz = raiz->direita;
+        if(raiz->esquerda != NULL){
+            temp->direita = raiz->esquerda;
+        }
+        else{
+            raiz->esquerda = (struct No*) malloc(sizeof(struct No));
+        }
+        raiz->esquerda = temp;
+    }
+    else if(direcao == 2){
+        // PRA DIREITA
+        raiz = raiz->esquerda; 
+        if(raiz->direita != NULL){
+            temp->esquerda = raiz->direita;
+        }
+        else{
+            raiz->direita = (struct No*) malloc(sizeof(struct No));
+        }
+        raiz->direita = temp; //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        printf("here %i", raiz->direita->dado);
+    }
+    else{
+        printf("Argumentos inválidos");
+    }
+}
 void rotdupla(int direcao,struct No* raiz){
     if(direcao == 1){
         rotsimples(2, raiz->direita);
@@ -213,24 +252,6 @@ void rotdupla(int direcao,struct No* raiz){
     else{
         printf("Argumentos inválidos");
     }
-}
-void rotsimples(int direcao,struct  No* raiz){
-    struct No* temp = (struct No*) malloc(sizeof(struct No));
-    temp = raiz;
-    if(direcao == 1){
-        raiz = raiz->direita;
-        temp->direita = raiz->esquerda;
-        raiz->esquerda = temp;
-    }
-    else if(direcao == 2){
-        raiz = raiz->esquerda;
-        temp->esquerda = raiz->direita;
-        raiz->direita = temp;
-    }
-    else{
-        printf("Argumentos inválidos");
-    }
-    free(temp);
 }
 void mostraArvore(struct No *a, int b)
 {
