@@ -6,16 +6,7 @@ C#, OCaml, VB, Swift, Pascal, Fortran, Haskell, Objective-C, Assembly, HTML, CSS
 Code, Compile, Run and Debug online from anywhere in world.
 
 *******************************************************************************/
-#include <stdio.h>
 
-/******************************************************************************
-
-Welcome to GDB Online.
-GDB online is an online compiler and debugger tool for C, C++, Python, Java, PHP, Ruby, Perl,
-C#, OCaml, VB, Swift, Pascal, Fortran, Haskell, Objective-C, Assembly, HTML, CSS, JS, SQLite, Prolog.
-Code, Compile, Run and Debug online from anywhere in world.
-
-*******************************************************************************/
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
@@ -30,8 +21,8 @@ struct No{
 
 int buscarots(struct No* raiz);
 // direcao = 1 -> rotacao pra esquerda, direcao = 2 -> rotacao pra direita
-void rotsimples(int direcao,struct No* raiz);
-void rotdupla(int direcao,struct No* raiz);
+struct No* rotsimples(int direcao,struct No* raiz);
+struct No* rotdupla(int direcao,struct No* raiz);
 struct No* insercao(struct No* raiz, int valor);
 void exclusao(struct No* base,struct No*raiz, int valor);
 void mostraArvore(struct No *a, int b);
@@ -39,7 +30,7 @@ void imprimeNo(int c, int b);
 int main()
 {
     int opcao=1, valor;
-    struct No* base;
+    struct No* base = NULL;
     printf("----  Bem-vindo à árvore AVL  ----");
     while(opcao != 5){
         printf("\nEscolha dentre as opções abaixo o que você deseja fazer:\n");
@@ -65,7 +56,7 @@ int main()
             }
         }
         else if(opcao == 3){
-            printf("Digite o valor a ser excluído da árovre: ");
+            printf("Digite o valor a ser excluído da árvore: ");
             scanf("%i",&valor);
             exclusao(base, base, valor);
             mostraArvore(base, 0);
@@ -147,19 +138,21 @@ void exclusao(struct No* base,struct No *raiz, int valor){
 } **/
 
 struct No* insercao(struct No* raiz, int valor){
-    if(raiz == NULL){   
-        raiz = (struct No *) malloc(sizeof(struct No));
+    if(raiz == NULL){
+        raiz = (struct No *) realloc(raiz,sizeof(struct No));
         raiz->dado = valor;
         raiz->esquerda = NULL;
         raiz->direita = NULL;
+        raiz->altura = 1;
+        raiz->fb = 0;
+        printf("new no ");
     }
     else{
         if(raiz->dado > valor){
             raiz->esquerda = insercao(raiz->esquerda, valor);
-            
         }
         else if(raiz->dado == valor){
-            printf("Valor já existente  ");
+            printf("Valor já existente");
         }
         else{
             raiz->direita = insercao(raiz->direita, valor);
@@ -173,17 +166,30 @@ int buscarots(struct No* raiz){
         return 0;
     }
     if(raiz->direita == NULL && raiz->esquerda == NULL){
-        printf("\nnew no\n");
+        printf("   this %i", raiz->altura);
         raiz->altura = 1;
-        raiz->fb = 0;
         return raiz->altura;
     }
-    int alturadir, alturaesq;
-    alturadir = buscarots(raiz->direita);
-    alturaesq = buscarots(raiz->esquerda);
+    int alturadir, alturaesq;    
+    if(raiz->direita == NULL){
+        alturadir = 0;
+        alturaesq = buscarots(raiz->esquerda);
+        printf("a");
+    }
+    else if(raiz->esquerda == NULL){
+        alturaesq = 0;
+        printf("b");
+        alturadir = buscarots(raiz->direita);
+    }
+    else{
+        alturadir = buscarots(raiz->direita);
+        alturaesq = buscarots(raiz->esquerda);
+        printf("c");
+    }
+    printf("that");
     raiz->fb = alturaesq - alturadir;
-    raiz->altura = fmax(alturaesq, alturadir) + 1;
-    printf("  altura: %i, fb: %i, alturaesq = %i, alturadir = %i, fbesq: %i  \n",raiz->altura, raiz->fb,alturaesq, alturadir, raiz->esquerda->fb);
+    raiz->altura = (int) fmax(alturaesq, alturadir) + 1;
+    printf("  altura: %i, fb: %i, alturaesq = %i, alturadir = %i \n",raiz->altura, raiz->fb,alturaesq, alturadir);
     if(raiz->fb >= 2 || raiz->fb <=-2){
         if(raiz->fb >= 2){ // rotação pra direita
             
@@ -202,15 +208,30 @@ int buscarots(struct No* raiz){
             else{
                 rotdupla(1,raiz);
             }
+        }  
+        if(raiz->direita == NULL){
+            alturadir = 0;
+            alturaesq = buscarots(raiz->esquerda);
+            printf("a");
         }
-        alturadir = buscarots(raiz->direita);
-        alturaesq = buscarots(raiz->esquerda);
+        else if(raiz->esquerda == NULL){
+            alturaesq = 0;
+            printf("b");
+            alturadir = buscarots(raiz->direita);
+        }
+        else{
+            alturadir = buscarots(raiz->direita);
+            alturaesq = buscarots(raiz->esquerda);
+            printf("c");
+        }
         raiz->fb = alturaesq - alturadir;
         raiz->altura = fmax(alturaesq, alturadir) + 1;
     }
+    mostraArvore(raiz, 0);
     return raiz->altura;
 }
-void rotsimples(int direcao,struct  No* raiz){
+struct No* rotsimples(int direcao,struct  No* raiz){
+    printf("d");
     struct No* temp = (struct No*) malloc(sizeof(struct No));
     temp = raiz; // temp e raiz = 3
     if(direcao == 1){
@@ -239,19 +260,21 @@ void rotsimples(int direcao,struct  No* raiz){
     else{
         printf("Argumentos inválidos");
     }
+    return raiz;
 }
-void rotdupla(int direcao,struct No* raiz){
+struct No* rotdupla(int direcao,struct No* raiz){
     if(direcao == 1){
-        rotsimples(2, raiz->direita);
-        rotsimples(1,raiz);
+        raiz->direita = rotsimples(2, raiz->direita);
+        raiz = rotsimples(1,raiz);
     }
     else if(direcao == 2){
-        rotsimples(1, raiz->esquerda);
-        rotsimples(2,raiz);
+        raiz->esquerda = rotsimples(1, raiz->esquerda);
+        raiz = rotsimples(2,raiz);
     }
     else{
         printf("Argumentos inválidos");
     }
+    return raiz;
 }
 void mostraArvore(struct No *a, int b)
 {
