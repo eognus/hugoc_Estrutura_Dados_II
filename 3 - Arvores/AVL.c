@@ -1,11 +1,3 @@
-/******************************************************************************
-
-Welcome to GDB Online.
-  GDB online is an online compiler and debugger tool for C, C++, Python, PHP, Ruby, 
-  C#, OCaml, VB, Perl, Swift, Prolog, Javascript, Pascal, COBOL, HTML, CSS, JS
-  Code, Compile, Run and Debug online from anywhere in world.
-
-*******************************************************************************/
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
@@ -22,7 +14,7 @@ int buscarots(struct No* raiz);
 // direcao = 1 -> rotacao pra esquerda, direcao = 2 -> rotacao pra direita
 void rotsimples(int direcao,struct No* raiz);
 void rotdupla(int direcao,struct No* raiz);
-void insercao(struct No* base,int valor);
+struct No* insercao(struct No* raiz, int valor);
 void exclusao(struct No* base,struct No*raiz, int valor);
 
 int main()
@@ -30,24 +22,39 @@ int main()
     int opcao=1, valor;
     struct No* base;
     printf("----  Bem-vindo à árvore AVL  ----");
-    while(opcao != 0){
+    while(opcao != 5){
         printf("\nEscolha dentre as opções abaixo o que você deseja fazer:\n");
         printf("1 - Inserir Nó\n");
-        printf("2 - Excluir Nó\n");
+        printf("2 - Inserir Nó em Sequência\n");
+        printf("3 - Excluir Nó\n");
+        printf("4 - Excluir Nó em Sequência\n");
+        printf("5 - Sair\n");
         scanf("%i",&opcao);
-        printf("%i",opcao);
         if(opcao == 1){
             printf("\nDigite o valor a ser inserido na árvore: ");
             scanf("%i",&valor);
-            insercao(base, valor);
+            base = insercao(base, valor);
+            buscarots(base);
         }
         else if(opcao == 2){
+            while(valor != -1){
+                scanf("%i",&valor);
+                base = insercao(base, valor);
+                buscarots(base);
+            }
+        }
+        else if(opcao == 3){
             printf("Digite o valor a ser excluído da árovre: ");
             scanf("%i",&valor);
-            printf("valor");
             exclusao(base, base, valor);
         }
-        else{
+        else if(opcao == 4){
+            while(valor != 1){
+                scanf("%i",&valor);
+                exclusao(base, base, valor);
+            }
+        }
+        else if(opcao != 5){
             printf("Opção inválida.\n");
         }
     }
@@ -91,10 +98,12 @@ void exclusao(struct No* base,struct No *raiz, int valor){
         printf("Valor não existente");
     }
 }
-void insercao(struct No* base, int valor){
+/**void insercao(struct No* base, int valor){
+    struct No* temp;
     struct No* temp;
     temp = base;
     while(temp != NULL){
+        aux = temp;
         printf("a");
         if(temp->dado > valor){
             printf("3");
@@ -110,47 +119,49 @@ void insercao(struct No* base, int valor){
             temp = temp->direita;
         }
     }
-    struct No* aux = (struct No*) malloc(sizeof(struct No));
-    temp = aux;
     temp->dado = valor;
     printf("\nValor inserido com sucesso. %i", temp->dado);
-}
-/*
-  void insercao(struct No* base,struct No* raiz, int valor){
-    if(raiz == NULL){
-        raiz = (struct No*) malloc(sizeof(struct No));
+} **/
+
+struct No* insercao(struct No* raiz, int valor){
+    if(raiz == NULL){   
+        raiz = (struct No *) malloc(sizeof(struct No));
         raiz->dado = valor;
-        buscarots(base);
+        raiz->esquerda = NULL;
+        raiz->direita = NULL;
     }
     else{
         if(raiz->dado > valor){
-            insercao(base, raiz->esquerda, valor);
+            raiz->esquerda = insercao(raiz->esquerda, valor);
+            
         }
         else if(raiz->dado == valor){
-            printf("Valor já existente");
+            printf("Valor já existente  ");
         }
         else{
-            insercao(base, raiz->direita, valor);
+            raiz->direita = insercao(raiz->direita, valor);
         }
     }
+    return raiz;
 }
-*/
+
 int buscarots(struct No* raiz){
     if(raiz == NULL){
-        printf("%i",raiz->dado);
         return 0;
     }
     if(raiz->direita == NULL && raiz->esquerda == NULL){
-        printf("2");
         return 1;
     }
-    int alturadir=0, alturaesq=0;
     
     alturadir = buscarots(raiz->direita);
     alturaesq = buscarots(raiz->esquerda);
     raiz->fb = alturaesq - alturadir;
     raiz->altura = fmax(alturaesq, alturadir) + 1;
-    
+    if(fb >= 2){
+        if(raiz->esquerda->fb > 0){
+            rotdupla
+        }
+    }
     return raiz->altura;
 }
 void rotdupla(int direcao,struct No* raiz){
