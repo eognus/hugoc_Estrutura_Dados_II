@@ -1,3 +1,11 @@
+/******************************************************************************
+
+Welcome to GDB Online.
+GDB online is an online compiler and debugger tool for C, C++, Python, Java, PHP, Ruby, Perl,
+C#, OCaml, VB, Swift, Pascal, Fortran, Haskell, Objective-C, Assembly, HTML, CSS, JS, SQLite, Prolog.
+Code, Compile, Run and Debug online from anywhere in world.
+
+*******************************************************************************/
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
@@ -11,13 +19,13 @@ struct No{
 };
 
 int buscarots(struct No* raiz);
-void reiniciabusca(struct No* raiz);
 // direcao = 1 -> rotacao pra esquerda, direcao = 2 -> rotacao pra direita
 void rotsimples(int direcao,struct No* raiz);
 void rotdupla(int direcao,struct No* raiz);
 struct No* insercao(struct No* raiz, int valor);
 void exclusao(struct No* base,struct No*raiz, int valor);
-
+void mostraArvore(struct No *a, int b);
+void imprimeNo(int c, int b);
 int main()
 {
     int opcao=1, valor;
@@ -36,23 +44,27 @@ int main()
             scanf("%i",&valor);
             base = insercao(base, valor);
             buscarots(base);
+            mostraArvore(base, 0);
         }
         else if(opcao == 2){
             while(valor != -1){
                 scanf("%i",&valor);
                 base = insercao(base, valor);
                 buscarots(base);
+                mostraArvore(base, 0);
             }
         }
         else if(opcao == 3){
             printf("Digite o valor a ser excluído da árovre: ");
             scanf("%i",&valor);
             exclusao(base, base, valor);
+            mostraArvore(base, 0);
         }
         else if(opcao == 4){
             while(valor != 1){
                 scanf("%i",&valor);
                 exclusao(base, base, valor);
+            mostraArvore(base, 0);
             }
         }
         else if(opcao != 5){
@@ -145,45 +157,47 @@ struct No* insercao(struct No* raiz, int valor){
     }
     return raiz;
 }
-void reiniciabusca(struct No* raiz){
-    while(buscarots(raiz) != -1){
-        buscarots(raiz);
-    }
-}
+
 int buscarots(struct No* raiz){
     if(raiz == NULL){
         return 0;
     }
     if(raiz->direita == NULL && raiz->esquerda == NULL){
-        return 1;
+        printf("\nnew no\n");
+        raiz->altura = 1;
+        raiz->fb = 0;
+        return raiz->altura;
     }
-    
+    int alturadir, alturaesq;
     alturadir = buscarots(raiz->direita);
     alturaesq = buscarots(raiz->esquerda);
-    if(alturadir == -1 || alturaesq == -1){
-        return -1;
-    }
     raiz->fb = alturaesq - alturadir;
     raiz->altura = fmax(alturaesq, alturadir) + 1;
-    if(fb >= 2){
-        // rotação pra direita
-        if(raiz->esquerda->fb > 0){
-            rotsimples(2,raiz)
+    printf("  altura: %i, fb: %i, alturaesq = %i, alturadir = %i  \n",raiz->altura, raiz->fb,alturaesq, alturadir);
+    if(raiz->fb >= 2 || raiz->fb <=-2){
+        printf("rodando");
+        if(raiz->fb >= 2){
+            // rotação pra direita
+            if(raiz->esquerda->fb > 0){
+                rotsimples(2,raiz);
+            }
+            else{
+                rotdupla(2,raiz);
+            }
         }
         else{
-            rotdupla(2,raiz)
+            // rotação pra esquerda
+            if(raiz->direita->fb < 0){
+                rotsimples(1,raiz);
+            }
+            else{
+                rotdupla(1,raiz);
+            }
         }
-        return -1;
-    }
-    else if (fb <= -2){
-        // rotação pra esquerda
-        if(raiz->direita->fb < 0){
-            rotsimples(1,raiz)
-        }
-        else{
-            rotdupla(1,raiz)
-        }
-        return -1;
+        alturadir = buscarots(raiz->direita);
+        alturaesq = buscarots(raiz->esquerda);
+        raiz->fb = alturaesq - alturadir;
+        raiz->altura = fmax(alturaesq, alturadir) + 1;
     }
     return raiz->altura;
 }
@@ -217,4 +231,23 @@ void rotsimples(int direcao,struct  No* raiz){
         printf("Argumentos inválidos");
     }
     free(temp);
+}
+void mostraArvore(struct No *a, int b)
+{
+    if (a != NULL) // Verifica se o nó atual não é nulo
+    {
+        // Chama a função recursivamente para percorrer a subárvore direita
+        mostraArvore(a->direita, b + 1);
+        // Imprime o nó atual com um espaçamento proporcional à sua profundidade
+        imprimeNo(a->dado, b);
+        // Chama a função recursivamente para percorrer a subárvore esquerda
+        mostraArvore(a->esquerda, b + 1);
+    }
+}
+void imprimeNo(int c, int b)
+{
+    int i;
+    for (i = 0; i < b; i++) // Loop para imprimir espaços proporcionais à profundidade
+        printf("   ");
+    printf("%i\n", c); // Imprime o valor do nó com a devida indentação
 }
