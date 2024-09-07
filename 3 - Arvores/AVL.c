@@ -19,12 +19,12 @@ struct No{
   int fb;
 };
 
-int buscarots(struct No* raiz);
+struct No* buscarots(struct No* raiz);
 // direcao = 1 -> rotacao pra esquerda, direcao = 2 -> rotacao pra direita
 struct No* rotsimples(int direcao,struct No* raiz);
 struct No* rotdupla(int direcao,struct No* raiz);
 struct No* insercao(struct No* raiz, int valor);
-void exclusao(struct No* base,struct No*raiz, int valor);
+struct No* exclusao(struct No* base,struct No*raiz, int valor);
 void mostraArvore(struct No *a, int b);
 void imprimeNo(int c, int b);
 int main()
@@ -44,28 +44,31 @@ int main()
             printf("\nDigite o valor a ser inserido na árvore: ");
             scanf("%i",&valor);
             base = insercao(base, valor);
-            buscarots(base);
+            base = buscarots(base);
             mostraArvore(base, 0);
         }
         else if(opcao == 2){
-            while(valor != -1){
+            while(1){
                 scanf("%i",&valor);
+                if(valor == -1){
+                    break;
+                }
                 base = insercao(base, valor);
-                buscarots(base);
+                base = buscarots(base);
                 mostraArvore(base, 0);
             }
         }
         else if(opcao == 3){
             printf("Digite o valor a ser excluído da árvore: ");
             scanf("%i",&valor);
-            exclusao(base, base, valor);
+            base = exclusao(base, base, valor);
             mostraArvore(base, 0);
         }
         else if(opcao == 4){
             while(valor != 1){
                 scanf("%i",&valor);
-                exclusao(base, base, valor);
-            mostraArvore(base, 0);
+                base = exclusao(base, base, valor);
+                mostraArvore(base, 0);
             }
         }
         else if(opcao != 5){
@@ -75,7 +78,7 @@ int main()
     
     return 0;
 }
-void exclusao(struct No* base,struct No *raiz, int valor){
+struct No* exclusao(struct No* base,struct No *raiz, int valor){
     if(raiz != NULL){
         if(raiz->dado > valor){
             exclusao(base, raiz->esquerda, valor);
@@ -101,8 +104,8 @@ void exclusao(struct No* base,struct No *raiz, int valor){
                 }
                 temp->esquerda = raiz->esquerda;
                 temp->direita = raiz->direita;
-                *raiz = *temp;
-                buscarots(base);
+                raiz = temp;
+                raiz = buscarots(base);
                 free(temp);
             }
             printf("Valor excluído");
@@ -111,6 +114,7 @@ void exclusao(struct No* base,struct No *raiz, int valor){
     else{
         printf("Valor não existente");
     }
+    return raiz;
 }
 /**void insercao(struct No* base, int valor){
     struct No* temp;
@@ -161,74 +165,67 @@ struct No* insercao(struct No* raiz, int valor){
     return raiz;
 }
 
-int buscarots(struct No* raiz){
+struct No* buscarots(struct No* raiz){
     if(raiz == NULL){
-        return 0;
+        return raiz;
     }
     if(raiz->direita == NULL && raiz->esquerda == NULL){
         printf("   this %i", raiz->altura);
         raiz->altura = 1;
-        return raiz->altura;
+        return raiz;
     }
     int alturadir, alturaesq;    
-    if(raiz->direita == NULL){
-        alturadir = 0;
-        alturaesq = buscarots(raiz->esquerda);
+    alturadir = 0;
+    alturaesq = 0;
+    if(raiz->esquerda != NULL){
+        raiz->esquerda = buscarots(raiz->esquerda);
+        alturaesq = raiz->esquerda->altura;
         printf("a");
     }
-    else if(raiz->esquerda == NULL){
-        alturaesq = 0;
+    if(raiz->direita != NULL){
         printf("b");
-        alturadir = buscarots(raiz->direita);
-    }
-    else{
-        alturadir = buscarots(raiz->direita);
-        alturaesq = buscarots(raiz->esquerda);
-        printf("c");
+        raiz->direita = buscarots(raiz->direita);
+        alturadir = raiz->direita->altura;
     }
     printf("that");
     raiz->fb = alturaesq - alturadir;
     raiz->altura = (int) fmax(alturaesq, alturadir) + 1;
-    printf("  altura: %i, fb: %i, alturaesq = %i, alturadir = %i \n",raiz->altura, raiz->fb,alturaesq, alturadir);
+    printf(" dado: %i altura: %i, fb: %i, alturaesq = %i, alturadir = %i \n",raiz->dado,raiz->altura, raiz->fb,alturaesq, alturadir);
     if(raiz->fb >= 2 || raiz->fb <=-2){
         if(raiz->fb >= 2){ // rotação pra direita
-            
             if(raiz->esquerda->fb > 0){
-                rotsimples(2,raiz);
+                raiz = rotsimples(2,raiz);
             }
             else{
-                rotdupla(2,raiz);
+                raiz = rotdupla(2,raiz);
             }
         }
         else{// rotação pra esquerda
             
             if(raiz->direita->fb < 0){
-                rotsimples(1,raiz);
+                raiz = rotsimples(1,raiz);
             }
             else{
-                rotdupla(1,raiz);
+                raiz = rotdupla(1,raiz);
             }
         }  
-        if(raiz->direita == NULL){
-            alturadir = 0;
-            alturaesq = buscarots(raiz->esquerda);
+        
+        alturadir = 0;
+        alturaesq = 0;
+        if(raiz->esquerda != NULL){
+            raiz->esquerda = buscarots(raiz->esquerda);
+            alturaesq = raiz->esquerda->altura;
             printf("a");
         }
-        else if(raiz->esquerda == NULL){
-            alturaesq = 0;
+        if(raiz->direita != NULL){
             printf("b");
-            alturadir = buscarots(raiz->direita);
-        }
-        else{
-            alturadir = buscarots(raiz->direita);
-            alturaesq = buscarots(raiz->esquerda);
-            printf("c");
+            raiz->direita = buscarots(raiz->direita);
+            alturadir = raiz->direita->altura;
         }
         raiz->fb = alturaesq - alturadir;
         raiz->altura = fmax(alturaesq, alturadir) + 1;
     }
-    mostraArvore(raiz, 0);
-    return raiz->altura;
+    return raiz;
 }
 struct No* rotsimples(int direcao,struct  No* raiz){
     printf("d");
@@ -237,25 +234,26 @@ struct No* rotsimples(int direcao,struct  No* raiz){
     if(direcao == 1){
         // PRA ESQUERDA
         raiz = raiz->direita;
-        if(raiz->esquerda != NULL){
-            temp->direita = raiz->esquerda;
+        if(raiz->esquerda == NULL){
+            raiz->esquerda = (struct No*) malloc(sizeof(struct No));
+            temp->direita = NULL;
         }
         else{
-            raiz->esquerda = (struct No*) malloc(sizeof(struct No));
+            temp->direita = raiz->esquerda;
         }
-        raiz->esquerda = temp;
+        raiz->direita = temp;
     }
     else if(direcao == 2){
         // PRA DIREITA
         raiz = raiz->esquerda; 
-        if(raiz->direita != NULL){
-            temp->esquerda = raiz->direita;
+        if(raiz->direita == NULL){
+            raiz->direita = (struct No*) malloc(sizeof(struct No));
+            temp->esquerda = NULL;
         }
         else{
-            raiz->direita = (struct No*) malloc(sizeof(struct No));
+            temp->esquerda = raiz->direita;
         }
-        raiz->direita = temp; //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        printf("here %i", raiz->direita->dado);
+        raiz->direita = temp;
     }
     else{
         printf("Argumentos inválidos");
