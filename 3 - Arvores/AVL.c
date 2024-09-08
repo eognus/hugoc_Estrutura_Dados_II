@@ -1,9 +1,40 @@
 /******************************************************************************
 
-Welcome to GDB Online.
-GDB online is an online compiler and debugger tool for C, C++, Python, Java, PHP, Ruby, Perl,
-C#, OCaml, VB, Swift, Pascal, Fortran, Haskell, Objective-C, Assembly, HTML, CSS, JS, SQLite, Prolog.
-Code, Compile, Run and Debug online from anywhere in world.
+Aluno: Hugo Araujo Corona
+
+Texto contendo os inputs necessários para simulação da árvore da branch main usando este código:
+2
+30
+24
+20
+35
+27
+33
+38
+25
+22
+34
+40
+29
+31
+15
+23
+-1
+4
+24
+35
+-1
+1
+24
+3
+27
+1
+32
+3
+30
+1
+21
+5
 
 *******************************************************************************/
 
@@ -11,6 +42,7 @@ Code, Compile, Run and Debug online from anywhere in world.
 #include <stdlib.h>
 #include <math.h>
 
+// Declaração da estrutura de Nó
 struct No{
   int dado;
   struct No *direita;
@@ -19,12 +51,19 @@ struct No{
   int fb;
 };
 
+// PROTOTIPAÇÃO
+// Função que varre árvore calculando alturas, fb e gerando rotações
 struct No* buscarots(struct No* raiz);
 // direcao = 1 -> rotacao pra esquerda, direcao = 2 -> rotacao pra direita
+// Função de rotação simples
 struct No* rotsimples(int direcao,struct No* raiz);
+// Função de rotação dupla
 struct No* rotdupla(int direcao,struct No* raiz);
+// Função de inserção de nó
 struct No* insercao(struct No* raiz, int valor);
-struct No* exclusao(struct No* base,struct No*raiz, int valor);
+// Função de exclusão de nó
+struct No* exclusao(struct No*raiz, int valor);
+// Funções abaixo somente para visualização da árvore, diretas do código da branch principal. Não me responsabilizo por quaisquer defeitos.
 void mostraArvore(struct No *a, int b);
 void imprimeNo(int c, int b);
 int main()
@@ -61,13 +100,18 @@ int main()
         else if(opcao == 3){
             printf("Digite o valor a ser excluído da árvore: ");
             scanf("%i",&valor);
-            base = exclusao(base, base, valor);
-            mostraArvore(base, 0);
+            base = exclusao(base,valor);
+            base = buscarots(base);
+            mostraArvore(base,0);
         }
         else if(opcao == 4){
             while(valor != 1){
                 scanf("%i",&valor);
-                base = exclusao(base, base, valor);
+                if(valor == -1){
+                    break;
+                }
+                base = exclusao(base, valor);
+                base = buscarots(base);
                 mostraArvore(base, 0);
             }
         }
@@ -75,19 +119,22 @@ int main()
             printf("Opção inválida.\n");
         }
     }
-    
+    printf("Fim.");
     return 0;
 }
-struct No* exclusao(struct No* base,struct No *raiz, int valor){
+
+// A função de exclusão substitui nós internos pelo valor mais à esquerda da sub-árvore da direita
+struct No* exclusao(struct No *raiz, int valor){
     if(raiz != NULL){
         if(raiz->dado > valor){
-            exclusao(base, raiz->esquerda, valor);
+            raiz->esquerda = exclusao(raiz->esquerda, valor);
         }
         else if(raiz->dado < valor){
-            exclusao(base, raiz->direita, valor);
+            raiz->direita = exclusao(raiz->direita, valor);
         }
         else{
             if(raiz->esquerda == NULL && raiz->direita == NULL){
+                free(raiz);
                 raiz = NULL;
             }
             else if(raiz->esquerda == NULL){
@@ -97,50 +144,45 @@ struct No* exclusao(struct No* base,struct No *raiz, int valor){
                 raiz = raiz->esquerda;
             }
             else{
-                struct No* temp = (struct No*) malloc(sizeof(struct No));
-                temp = raiz->direita;
-                while(temp->esquerda != NULL){
+                struct No* temp = raiz->direita;
+                if(temp->esquerda != NULL){
+                    if(temp->esquerda->esquerda != NULL){
+                        while(temp->esquerda->esquerda != NULL){
+                            temp = temp->esquerda->esquerda;
+                        }
+                        
+                    }  
+                    struct No* aux = temp;
                     temp = temp->esquerda;
+                    aux->esquerda = NULL;
                 }
                 temp->esquerda = raiz->esquerda;
-                temp->direita = raiz->direita;
-                raiz = temp;
-                raiz = buscarots(base);
-                free(temp);
+                if(temp->direita != NULL && raiz->direita != temp){
+                    
+                    struct No* temp2;
+                    temp2 = temp->direita;
+                    if(temp2->direita != NULL){
+                        while(temp2->direita != NULL){
+                            temp2 = temp2->direita;
+                        }
+                    }
+                    temp2->direita = raiz->direita;
+                }
+                else if(temp->direita == NULL){
+                    temp->direita = raiz->direita;
+                }
+                *raiz = *temp;
             }
-            printf("Valor excluído");
+            printf("\nValor excluído\n");
         }
     }
     else{
-        printf("Valor não existente");
+        printf("\nValor não existente\n");
     }
     return raiz;
 }
-/**void insercao(struct No* base, int valor){
-    struct No* temp;
-    struct No* temp;
-    temp = base;
-    while(temp != NULL){
-        aux = temp;
-        printf("a");
-        if(temp->dado > valor){
-            printf("3");
-            temp = temp->esquerda;
-        }
-        else if(temp->dado == valor){
-            printf("2");
-            printf("Valor já existente");
-            return;
-        }
-        else{
-            printf("1");
-            temp = temp->direita;
-        }
-    }
-    temp->dado = valor;
-    printf("\nValor inserido com sucesso. %i", temp->dado);
-} **/
 
+// A função de inserção insere um nó não duplicado na árvore, senão não é inserido.
 struct No* insercao(struct No* raiz, int valor){
     if(raiz == NULL){
         raiz = (struct No *) realloc(raiz,sizeof(struct No));
@@ -149,14 +191,14 @@ struct No* insercao(struct No* raiz, int valor){
         raiz->direita = NULL;
         raiz->altura = 1;
         raiz->fb = 0;
-        printf("new no ");
+        printf("\nnew no\n");
     }
     else{
         if(raiz->dado > valor){
             raiz->esquerda = insercao(raiz->esquerda, valor);
         }
         else if(raiz->dado == valor){
-            printf("Valor já existente");
+            printf("\nValor já existente\n");
         }
         else{
             raiz->direita = insercao(raiz->direita, valor);
@@ -165,12 +207,13 @@ struct No* insercao(struct No* raiz, int valor){
     return raiz;
 }
 
+// A função de busca realiza a busca,correção de alturas e fbs e rotação dos nós após qualquer inserção, exclusão ou rotação.
 struct No* buscarots(struct No* raiz){
     if(raiz == NULL){
         return raiz;
     }
+    int dado = raiz->dado;
     if(raiz->direita == NULL && raiz->esquerda == NULL){
-        printf("   this %i", raiz->altura);
         raiz->altura = 1;
         return raiz;
     }
@@ -180,17 +223,13 @@ struct No* buscarots(struct No* raiz){
     if(raiz->esquerda != NULL){
         raiz->esquerda = buscarots(raiz->esquerda);
         alturaesq = raiz->esquerda->altura;
-        printf("a");
     }
     if(raiz->direita != NULL){
-        printf("b");
         raiz->direita = buscarots(raiz->direita);
         alturadir = raiz->direita->altura;
     }
-    printf("that");
     raiz->fb = alturaesq - alturadir;
     raiz->altura = (int) fmax(alturaesq, alturadir) + 1;
-    printf(" dado: %i altura: %i, fb: %i, alturaesq = %i, alturadir = %i \n",raiz->dado,raiz->altura, raiz->fb,alturaesq, alturadir);
     if(raiz->fb >= 2 || raiz->fb <=-2){
         if(raiz->fb >= 2){ // rotação pra direita
             if(raiz->esquerda->fb > 0){
@@ -215,10 +254,8 @@ struct No* buscarots(struct No* raiz){
         if(raiz->esquerda != NULL){
             raiz->esquerda = buscarots(raiz->esquerda);
             alturaesq = raiz->esquerda->altura;
-            printf("a");
         }
         if(raiz->direita != NULL){
-            printf("b");
             raiz->direita = buscarots(raiz->direita);
             alturadir = raiz->direita->altura;
         }
@@ -227,10 +264,10 @@ struct No* buscarots(struct No* raiz){
     }
     return raiz;
 }
+
+// A função de rotação simples realiza a rotação de nós de uma subárvore. Recebe uma direção em que 1 = à esquerda, 2 = à direita.
 struct No* rotsimples(int direcao,struct  No* raiz){
-    printf("d");
-    struct No* temp = (struct No*) malloc(sizeof(struct No));
-    temp = raiz; // temp e raiz = 3
+    struct No* temp= raiz; 
     if(direcao == 1){
         // PRA ESQUERDA
         raiz = raiz->direita;
@@ -241,7 +278,7 @@ struct No* rotsimples(int direcao,struct  No* raiz){
         else{
             temp->direita = raiz->esquerda;
         }
-        raiz->direita = temp;
+        raiz->esquerda = temp;
     }
     else if(direcao == 2){
         // PRA DIREITA
@@ -260,6 +297,8 @@ struct No* rotsimples(int direcao,struct  No* raiz){
     }
     return raiz;
 }
+
+// A função de rotação dupla realiza a rotação dupla dos nós da subárvore, obedecendo a mesma regra de direção citada acima.
 struct No* rotdupla(int direcao,struct No* raiz){
     if(direcao == 1){
         raiz->direita = rotsimples(2, raiz->direita);
@@ -274,6 +313,8 @@ struct No* rotdupla(int direcao,struct No* raiz){
     }
     return raiz;
 }
+
+// As funções abaixo foram introduzida por um contexto mero ilustrativo, podendo ser removidas do código se desejável.
 void mostraArvore(struct No *a, int b)
 {
     if (a != NULL) // Verifica se o nó atual não é nulo
