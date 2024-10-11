@@ -17,10 +17,64 @@ typedef struct treap{
 Treap* insercao(Treap* raiz, int dado, int prioridade);
 Treap* exclusao(Treap* raiz, int dado);
 Treap* mistura(Treap* nova, Treap* atual);
+void imprimeNo(int c, int b);
+void mostraArvore(Treap *a, int b);
+
 
 int main()
 {
-    printf("Hello World");
+    Treap* raiz = NULL;
+    int opcao = 0;
+    printf("Menu");
+    do{
+        int valor, prioridade;
+        printf("\nEscolha dentre as opções abaixo o que você deseja fazer:\n");
+        printf("1 - Inserir Nó\n");
+        printf("2 - Inserir Nó em Sequência\n");
+        printf("3 - Excluir Nó\n");
+        printf("4 - Excluir Nó em Sequência\n");
+        printf("5 - Sair\n");
+        scanf("%i",&opcao);
+        if(opcao == 1){
+            printf("\nDigite o valor a ser inserido na árvore: ");
+            scanf("%i",&valor);
+            printf("\nDigite a prioridade do valor: ");
+            scanf("%i",&prioridade);
+            raiz = insercao(raiz, valor,prioridade);
+            mostraArvore(raiz, 0);
+        }
+        else if(opcao == 2){
+            while(1){
+                scanf("%i",&valor);
+                scanf("%i",&prioridade);
+                if(valor == -1){
+                    break;
+                }
+                raiz = insercao(raiz, valor,prioridade);
+                mostraArvore(raiz, 0);
+            }
+        }
+        else if(opcao == 3){
+            printf("Digite o valor a ser excluído da árvore: ");
+            scanf("%i",&valor);
+            raiz = exclusao(raiz,valor);
+            mostraArvore(raiz,0);
+        }
+        else if(opcao == 4){
+            while(valor != 1){
+                scanf("%i",&valor);
+                if(valor == -1){
+                    break;
+                }
+                raiz = exclusao(raiz, valor);
+                mostraArvore(raiz, 0);
+            }
+        }
+        else if(opcao != 5){
+            printf("Opção inválida.\n");
+        }
+    }while(opcao != 5);
+    printf("Fim.");
     return 0;
 }
 
@@ -113,4 +167,27 @@ Treap* exclusao(Treap* raiz, int dado){
         free(raiz);
     }
     return raiz;
+}
+
+// As 2 funções abaixo foram copiadas do código original da AVL para fins de
+// representação visual
+void mostraArvore(Treap *a, int b)
+{
+    if (a != NULL) // Verifica se o nó atual não é nulo
+    {
+        // Chama a função recursivamente para percorrer a subárvore direita
+        mostraArvore(a->dir, b + 1);
+        // Imprime o nó atual com um espaçamento proporcional à sua profundidade
+        imprimeNo(a->info, b);
+        // Chama a função recursivamente para percorrer a subárvore esquerda
+        mostraArvore(a->esq, b + 1);
+    }
+}
+
+void imprimeNo(int c, int b)
+{
+    int i;
+    for (i = 0; i < b; i++) // Loop para imprimir espaços proporcionais à profundidade
+        printf("   ");
+    printf("%i\n", c); // Imprime o valor do nó com a devida indentação
 }
