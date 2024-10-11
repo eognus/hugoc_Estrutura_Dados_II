@@ -7,6 +7,7 @@ Turma: CC6M
 #include <stdio.h>
 #include <stdlib.h>
 
+// Definição da estrutura do Treap
 typedef struct treap{
     int info;
     int priori;
@@ -14,18 +15,20 @@ typedef struct treap{
     struct treap* dir;
 } Treap;
 
+// Prototipação
 Treap* insercao(Treap* raiz, int dado, int prioridade);
 Treap* exclusao(Treap* raiz, int dado);
 Treap* mistura(Treap* nova, Treap* atual);
 void imprimeNo(int c, int b);
 void mostraArvore(Treap *a, int b);
 
-
+// Função main
 int main()
 {
     Treap* raiz = NULL;
     int opcao = 0;
     printf("Menu");
+    // Cria menu para inserção e exclusão de valores, assim como visualização
     do{
         int valor, prioridade;
         printf("\nEscolha dentre as opções abaixo o que você deseja fazer:\n");
@@ -78,6 +81,7 @@ int main()
     return 0;
 }
 
+// Faz a inserção de valores na árvore com base na sua prioridade e valor
 Treap* insercao(Treap* raiz, int dado, int prioridade){  // fazer com que trabalhe com valor e prioridade n com o nó
     if(raiz == NULL){
         raiz = (Treap*) malloc(sizeof(Treap));
@@ -120,6 +124,7 @@ Treap* insercao(Treap* raiz, int dado, int prioridade){  // fazer com que trabal
     return raiz;
 }
 
+// Função auxiliar usada na exclusão para se caso o nó excluído tiver filhos que têm filhos
 Treap* mistura(Treap* nova, Treap* atual){
     if(nova == NULL){
         return NULL;
@@ -130,6 +135,7 @@ Treap* mistura(Treap* nova, Treap* atual){
     return atual;
 }
 
+// Exclui valores da árvore
 Treap* exclusao(Treap* raiz, int dado){
     if(raiz == NULL){
         printf("Valor não encontrado");
