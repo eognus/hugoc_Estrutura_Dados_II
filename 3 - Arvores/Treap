@@ -1,0 +1,116 @@
+/******************************************************************************
+Aluno: Hugo Araujo Corona
+Turma: CC6M
+
+*******************************************************************************/
+
+#include <stdio.h>
+#include <stdlib.h>
+
+typedef struct treap{
+    int info;
+    int priori;
+    struct treap* esq;
+    struct treap* dir;
+} Treap;
+
+Treap* insercao(Treap* raiz, int dado, int prioridade);
+Treap* exclusao(Treap* raiz, int dado);
+Treap* mistura(Treap* nova, Treap* atual);
+
+int main()
+{
+    printf("Hello World");
+    return 0;
+}
+
+Treap* insercao(Treap* raiz, int dado, int prioridade){  // fazer com que trabalhe com valor e prioridade n com o nó
+    if(raiz == NULL){
+        raiz = (Treap*) malloc(sizeof(Treap));
+        raiz->esq = NULL;
+        raiz->dir = NULL;
+        raiz->info = dado;
+        raiz->priori = prioridade;
+    }
+    else if(raiz->priori >= prioridade){
+        if(raiz->info >= dado){
+            raiz->esq = insercao(raiz->esq, dado, prioridade);
+        }
+        else{
+            raiz->dir = insercao(raiz->dir, dado, prioridade);
+        }
+    }
+    else{
+        Treap* aux = (Treap*) malloc(sizeof(Treap));
+        *aux = *raiz;
+        raiz->info = dado;
+        raiz->priori = prioridade;
+        
+        if(raiz->info > aux->info){
+            raiz->esq = aux;
+            while(aux->dir != NULL && raiz->info >= aux->info){
+                aux = aux->dir;
+            }
+            raiz->dir = aux->dir;
+            aux->dir = NULL;
+        }
+        else{
+            raiz->dir = aux;
+            while(aux->esq != NULL && raiz->info < aux->info){
+                aux = aux->esq;
+            }
+            raiz->esq = aux->esq;
+            aux->esq = NULL;
+        }
+    }
+    return raiz;
+}
+
+Treap* mistura(Treap* nova, Treap* atual){
+    if(nova == NULL){
+        return NULL;
+    }
+    atual = mistura(nova->esq, atual);
+    atual = mistura(nova->dir, atual);
+    atual = insercao(atual, nova->info, nova->priori);
+    return atual;
+}
+
+Treap* exclusao(Treap* raiz, int dado){
+    if(raiz == NULL){
+        printf("Valor não encontrado");
+        return NULL;
+    }
+    if(raiz->info != dado){
+        if(raiz->info > dado){
+            raiz->esq = exclusao(raiz->esq,dado);
+        }
+        else{
+            raiz->dir = exclusao(raiz->dir,dado);
+        }
+        return raiz;
+    }
+    
+    if(raiz->esq != NULL && raiz->dir != NULL){
+        if(raiz->esq->priori >= raiz->dir->priori){
+            Treap* aux = raiz->dir;
+            raiz = raiz->esq;
+            raiz->dir = mistura(aux,raiz->dir);
+        }
+        else{
+            Treap* aux = raiz->esq;
+            raiz = raiz->dir;
+            raiz->esq = mistura(aux,raiz->esq);
+        }
+    }
+    else if(raiz->esq != NULL){
+        raiz = raiz->esq;
+    }
+    else if(raiz->dir != NULL){
+        raiz = raiz->dir;
+    }
+    else{
+        free(raiz);
+    }
+    return raiz;
+}
