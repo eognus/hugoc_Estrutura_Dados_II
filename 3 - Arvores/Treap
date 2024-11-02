@@ -19,12 +19,18 @@ typedef struct treap{
 Treap* insercao(Treap* raiz, int dado, int prioridade);
 Treap* exclusao(Treap* raiz, int dado);
 Treap* mistura(Treap* nova, Treap* atual);
+Treap* insereno(Treap* raiz, int dado, int prioridade);
 
 // Função main
 int main()
 {
     printf("Hello World");
     return 0;
+}
+
+// Função auxiliar à inclusão que serve para gerar um valor aleatório para prioridade
+Treap* insereno(Treap* raiz, int dado, int prioridade){
+    return insercao(raiz, dado, rand());
 }
 
 // Função para adicionar nó, retorna árvore em seu estado final
